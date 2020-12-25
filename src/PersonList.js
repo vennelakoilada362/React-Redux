@@ -25,6 +25,7 @@ export class PersonList extends Component {
     if (this.state.currentId == -1) {
       this.setState({ personlist: [...this.state.personlist, newPerson] });
       this.setState({ firstName: "", lastName: "", age: "", gender: "" });
+      this.setState({ show: !this.state.show });
     } else {
       this.setState({
         personlist: this.state.personlist.map((person, i) => {
@@ -67,6 +68,7 @@ export class PersonList extends Component {
   };
 
   edit = (e) => {
+    this.setState({ show: !this.state.show });
     this.setState({
       currentId: e.target.id,
       firstName: this.state.personlist[e.target.value].firstName,
@@ -78,6 +80,17 @@ export class PersonList extends Component {
 
   show = () => {
     this.setState({ show: !this.state.show });
+  };
+
+  cancel = () => {
+    this.setState({ show: !this.state.show });
+    this.setState({
+      currentId: -1,
+      firstName: "",
+      lastName: "",
+      age: "",
+      gender: "",
+    });
   };
 
   render() {
@@ -149,16 +162,16 @@ export class PersonList extends Component {
                 />
                 <label>Male</label>
               </div>
-              <div>
+              {/* <div>
                 <Button type="submit">Submit</Button>
-              </div>
+              </div> */}
             </form>
           </Modal.Body>
           <Modal.Footer>
-            <Button className="btn-danger" onClick={this.show}>
-              Close
+            <Button className="btn-danger" onClick={this.cancel}>
+              Cancel
             </Button>
-            <Button onClick={this.submit}>Save</Button>
+            <Button onClick={this.submit}>Submit</Button>
           </Modal.Footer>
         </Modal>
         <br />
