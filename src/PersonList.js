@@ -11,10 +11,46 @@ export class PersonList extends Component {
     personlist: [],
     currentId: -1,
     show: false,
+    error: {
+      firstName: "",
+      lastName: "",
+      age: "",
+      gender: "",
+    },
   };
+
+  validate = () => {
+    this.setState({
+      error: {
+        firstName: this.state.firstName == "",
+        lastName: this.state.lastName == "",
+        age: this.state.age == "",
+        gender: this.state.gender == "",
+      },
+    });
+    return (
+      this.state.firstName != "" &&
+      this.state.lastName != "" &&
+      this.state.age != "" &&
+      this.state.gender != ""
+    );
+  };
+
+  // validation = () => {}
+  //   let error = "";
+
+  //   if (this.state.f=="") {
+  //     error = "Can't be blank";
+  //   }
+  //   if (error) {
+  //     this.setState({ error });
+  //     return false;
+  //   }
+  // };
 
   submit = (e) => {
     e.preventDefault();
+    // const valid = this.validation();
     const newPerson = {
       firstName: this.state.firstName,
       lastName: this.state.lastName,
@@ -22,43 +58,63 @@ export class PersonList extends Component {
       gender: this.state.gender,
     };
 
-    if (this.state.currentId == -1) {
-      this.setState({ personlist: [...this.state.personlist, newPerson] });
-      this.setState({ firstName: "", lastName: "", age: "", gender: "" });
-      this.setState({ show: !this.state.show });
-    } else {
-      this.setState({
-        personlist: this.state.personlist.map((person, i) => {
-          if (i == this.state.currentId) {
-            return newPerson;
-          } else {
-            return person;
-          }
-        }),
-      });
-      this.setState({
-        firstName: "",
-        lastName: "",
-        age: "",
-        gender: "",
-        currentId: -1,
-      });
+    if (this.validate()) {
+      if (this.state.currentId == -1) {
+        this.setState({ personlist: [...this.state.personlist, newPerson] });
+        this.setState({
+          firstName: "",
+          lastName: "",
+          age: "",
+          gender: "",
+        });
+        this.setState({ show: !this.state.show });
+      } else {
+        this.setState({
+          personlist: this.state.personlist.map((person, i) => {
+            if (i == this.state.currentId) {
+              return newPerson;
+            } else {
+              return person;
+            }
+          }),
+        });
+        this.setState({
+          firstName: "",
+          lastName: "",
+          age: "",
+          gender: "",
+          currentId: -1,
+          show: !this.state.show,
+        });
+      }
     }
   };
 
   firstname = (e) => {
-    this.setState({ firstName: e.target.value });
+    this.setState({
+      firstName: e.target.value,
+      error: { ...this.state.error, firstName: false },
+    });
   };
 
   lastname = (e) => {
-    this.setState({ lastName: e.target.value });
+    this.setState({
+      lastName: e.target.value,
+      error: { ...this.state.error, lastName: false },
+    });
   };
   age = (e) => {
-    this.setState({ age: e.target.value });
+    this.setState({
+      age: e.target.value,
+      error: { ...this.state.error, age: false },
+    });
   };
 
   gender = (e) => {
-    this.setState({ gender: e.target.id });
+    this.setState({
+      gender: e.target.id,
+      error: { ...this.state.error, gender: false },
+    });
   };
 
   delete = (e) => {
@@ -119,6 +175,9 @@ export class PersonList extends Component {
                   onChange={this.firstname}
                   value={this.state.firstName}
                 />
+                <p className="error">
+                  {this.state.error.firstName ? "*please enter the field" : ""}
+                </p>
               </div>
               <div className="lastName">
                 <label>Last Name</label>
@@ -129,6 +188,9 @@ export class PersonList extends Component {
                   onChange={this.lastname}
                   value={this.state.lastName}
                 />
+                <p className="error">
+                  {this.state.error.lastName ? "*please enter the field" : ""}
+                </p>
               </div>
               <div className="age">
                 <label>Age</label>
@@ -139,6 +201,9 @@ export class PersonList extends Component {
                   onChange={this.age}
                   value={this.state.age}
                 />
+                <p className="error">
+                  {this.state.error.age ? "*please enter the field" : ""}
+                </p>
               </div>
               <div className="gender">
                 <label>Gender:</label>
@@ -161,6 +226,9 @@ export class PersonList extends Component {
                   onChange={this.gender}
                 />
                 <label>Male</label>
+                <p className="error">
+                  {this.state.error.gender ? "*please enter the field" : ""}
+                </p>
               </div>
               {/* <div>
                 <Button type="submit">Submit</Button>
