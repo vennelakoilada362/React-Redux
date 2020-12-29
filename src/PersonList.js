@@ -1,14 +1,47 @@
 import React, { Component } from "react";
 import "./App.css";
 import { Button, Modal } from "react-bootstrap";
+import {
+  BsFillPersonPlusFill,
+  BsFillTrashFill,
+  BsPencilSquare,
+} from "react-icons/bs";
+import { AiOutlineTeam } from "react-icons/ai";
 
 export class PersonList extends Component {
   state = {
+    i: "",
     firstName: "",
     lastName: "",
     age: "",
     gender: "",
-    personlist: [],
+    search: "",
+    personlist: [
+      {
+        firstName: "Cullen",
+        lastName: "Renesmee",
+        age: "10",
+        gender: "Female",
+      },
+      {
+        firstName: "Koilada",
+        lastName: "Vennela",
+        age: "19",
+        gender: "Female",
+      },
+      {
+        firstName: "Prince",
+        lastName: "Loki",
+        age: "28",
+        gender: "Male",
+      },
+      {
+        firstName: "Tony",
+        lastName: "Stark",
+        age: "29",
+        gender: "Male",
+      },
+    ],
     currentId: -1,
     show: false,
     error: {
@@ -36,21 +69,8 @@ export class PersonList extends Component {
     );
   };
 
-  // validation = () => {}
-  //   let error = "";
-
-  //   if (this.state.f=="") {
-  //     error = "Can't be blank";
-  //   }
-  //   if (error) {
-  //     this.setState({ error });
-  //     return false;
-  //   }
-  // };
-
   submit = (e) => {
     e.preventDefault();
-    // const valid = this.validation();
     const newPerson = {
       firstName: this.state.firstName,
       lastName: this.state.lastName,
@@ -146,22 +166,53 @@ export class PersonList extends Component {
       lastName: "",
       age: "",
       gender: "",
+      error: {
+        currentId: -1,
+        firstName: "",
+        lastName: "",
+        age: "",
+        gender: "",
+      },
     });
+  };
+
+  search = (e) => {
+    this.setState({ search: e.target.value });
+    {
+      this.state.personlist.filter((person) => {
+        return (
+          person.firstName
+            .toLowerCase()
+            .includes(this.state.search.toLowerCase()) ||
+          person.lastName
+            .toLowerCase()
+            .includes(this.state.search.toLowerCase()) ||
+          person.age.toLowerCase().includes(this.state.search.toLowerCase()) ||
+          person.gender.toLowerCase().includes(this.state.search.toLowerCase())
+        );
+      });
+    }
   };
 
   render() {
     return (
       <div className="wrapper">
+        <h1 className="h1">
+          <AiOutlineTeam />
+          PersonList
+        </h1>
+        <br />
         <Button
           type="button"
           class="btn btn-primary"
           data-toggle="modal"
           onClick={this.show}
         >
+          <BsFillPersonPlusFill />
           Add Details
         </Button>
         <Modal show={this.state.show}>
-          <Modal.Header closeButton onClick={this.show}>
+          <Modal.Header closeButton onClick={this.cancel}>
             <h2>Form Page</h2>
           </Modal.Header>
           <Modal.Body>
@@ -176,7 +227,7 @@ export class PersonList extends Component {
                   value={this.state.firstName}
                 />
                 <p className="error">
-                  {this.state.error.firstName ? "*please enter the field" : ""}
+                  {this.state.error.firstName ? "*Can't be blank" : ""}
                 </p>
               </div>
               <div className="lastName">
@@ -189,7 +240,7 @@ export class PersonList extends Component {
                   value={this.state.lastName}
                 />
                 <p className="error">
-                  {this.state.error.lastName ? "*please enter the field" : ""}
+                  {this.state.error.lastName ? "*Can't be blank" : ""}
                 </p>
               </div>
               <div className="age">
@@ -202,7 +253,7 @@ export class PersonList extends Component {
                   value={this.state.age}
                 />
                 <p className="error">
-                  {this.state.error.age ? "*please enter the field" : ""}
+                  {this.state.error.age ? "*Can't be blank" : ""}
                 </p>
               </div>
               <div className="gender">
@@ -227,7 +278,7 @@ export class PersonList extends Component {
                 />
                 <label>Male</label>
                 <p className="error">
-                  {this.state.error.gender ? "*please enter the field" : ""}
+                  {this.state.error.gender ? "*Can't be blank" : ""}
                 </p>
               </div>
               {/* <div>
@@ -236,19 +287,30 @@ export class PersonList extends Component {
             </form>
           </Modal.Body>
           <Modal.Footer>
-            <Button className="btn-danger" onClick={this.cancel}>
+            <Button className="btn btn-danger" onClick={this.cancel}>
               Cancel
             </Button>
-            <Button onClick={this.submit}>Submit</Button>
+            <Button className="btn btn-primary" onClick={this.submit}>
+              Submit
+            </Button>
           </Modal.Footer>
         </Modal>
         <br />
-        <table className="table table-striped">
+        <input
+          type="text"
+          name="search"
+          id="input"
+          placeholder="Search User...."
+          value={this.state.search}
+          onChange={this.search}
+        />
+        <br />
+        <table className="table table-striped container">
           <thead>
             <tr>
               <th>S.No</th>
-              <th>First Name</th>
-              <th>Last Name</th>
+              <th>FirstName</th>
+              <th>LastName</th>
               <th>Age</th>
               <th>Gender</th>
               <th>Update</th>
@@ -256,30 +318,52 @@ export class PersonList extends Component {
             </tr>
           </thead>
           <tbody id="personlist">
-            {this.state.personlist.map((person, i) => (
-              <tr>
-                <td>{i + 1}</td>
-                <td>{person.firstName}</td>
-                <td>{person.lastName}</td>
-                <td>{person.age}</td>
-                <td>{person.gender}</td>
-                <td>
-                  <button
-                    className="btn-primary"
-                    id={i}
-                    value={i}
-                    onClick={this.edit}
-                  >
-                    Edit
-                  </button>
-                </td>
-                <td>
-                  <button className="btn-danger" id={i} onClick={this.delete}>
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {this.state.personlist
+              .filter((person) => {
+                if (this.state.search == "") {
+                  return person;
+                } else if (
+                  person.firstName
+                    .toLowerCase()
+                    .includes(this.state.search.toLowerCase()) ||
+                  person.lastName
+                    .toLowerCase()
+                    .includes(this.state.search.toLowerCase()) ||
+                  person.age
+                    .toLowerCase()
+                    .includes(this.state.search.toLowerCase()) ||
+                  person.gender
+                    .toLowerCase()
+                    .includes(this.state.search.toLowerCase())
+                ) {
+                  return person;
+                }
+              })
+              .map((person, i) => (
+                <tr>
+                  <td>{i + 1}</td>
+                  <td>{person.firstName}</td>
+                  <td>{person.lastName}</td>
+                  <td>{person.age}</td>
+                  <td>{person.gender}</td>
+                  <td>
+                    <button
+                      class="btn btn-primary"
+                      id={i}
+                      value={i}
+                      onClick={this.edit}
+                    >
+                      <BsPencilSquare />
+                      Edit
+                    </button>
+                  </td>
+                  <td>
+                    <button class="btn btn-danger" id={i} onClick={this.delete}>
+                      <BsFillTrashFill /> Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

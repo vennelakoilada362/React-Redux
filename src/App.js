@@ -1,11 +1,11 @@
-import './App.css';
-import React from 'react';
-import PersonList from './PersonList';
+import "./App.css";
+import React from "react";
+import PersonList from "./PersonList";
 
 function App() {
   return (
     <div className="App">
-       <PersonList/>
+      <PersonList />
     </div>
   );
 }
