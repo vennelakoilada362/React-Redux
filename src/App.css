@@ -46,6 +46,10 @@
   background-color: #daf7f1;
 }
 
+.search {
+  height: 6vh;
+}
+
 .form-wrapper {
   width: 400px;
   display: flex;

@@ -16,6 +16,13 @@ export class PersonList extends Component {
     age: "",
     gender: "",
     search: "",
+    sort: "asc",
+    direction: {
+      firstName: true,
+      lastName: true,
+      age: true,
+      gender: true,
+    },
     personlist: [
       {
         firstName: "Cullen",
@@ -25,9 +32,9 @@ export class PersonList extends Component {
       },
       {
         firstName: "Koilada",
-        lastName: "Vennela",
-        age: "19",
-        gender: "Female",
+        lastName: "Avinash",
+        age: "11",
+        gender: "Male",
       },
       {
         firstName: "Prince",
@@ -158,6 +165,21 @@ export class PersonList extends Component {
     this.setState({ show: !this.state.show });
   };
 
+  getPersons = () => {
+    return this.state.personlist.filter((person) => {
+      return (
+        person.firstName
+          .toLowerCase()
+          .includes(this.state.search.toLowerCase()) ||
+        person.lastName
+          .toLowerCase()
+          .includes(this.state.search.toLowerCase()) ||
+        person.age.toLowerCase().includes(this.state.search.toLowerCase()) ||
+        person.gender.toLowerCase().includes(this.state.search.toLowerCase())
+      );
+    });
+  };
+
   cancel = () => {
     this.setState({ show: !this.state.show });
     this.setState({
@@ -178,20 +200,28 @@ export class PersonList extends Component {
 
   search = (e) => {
     this.setState({ search: e.target.value });
-    {
-      this.state.personlist.filter((person) => {
-        return (
-          person.firstName
-            .toLowerCase()
-            .includes(this.state.search.toLowerCase()) ||
-          person.lastName
-            .toLowerCase()
-            .includes(this.state.search.toLowerCase()) ||
-          person.age.toLowerCase().includes(this.state.search.toLowerCase()) ||
-          person.gender.toLowerCase().includes(this.state.search.toLowerCase())
-        );
-      });
-    }
+  };
+
+  sorting = () => {
+    console.log(this.state.direction.age);
+    this.setState({
+      personlist: this.state.personlist.sort((a, b) =>
+        this.state.direction.age === true ? a.age - b.age : b.age - a.age
+      ),
+      direction: { age: !this.state.direction.age },
+    });
+  };
+
+  sortUserName = () => {
+    console.log(this.state.direction.firstName);
+    this.setState({
+      personlist: this.state.personlist.sort((a, b) =>
+        this.state.direction.firstName === true
+          ? a.firstName.toString().localeCompare(b.firstName.toString())
+          : b.firstName.toString().localeCompare(a.firstName.toString())
+      ),
+      direction: { firstName: !this.state.direction.firstName },
+    });
   };
 
   render() {
@@ -211,6 +241,16 @@ export class PersonList extends Component {
           <BsFillPersonPlusFill />
           Add Details
         </Button>
+        <br />
+        <input
+          className="search"
+          type="text"
+          name="search"
+          id="input"
+          placeholder="Search User...."
+          value={this.state.search}
+          onChange={this.search}
+        />
         <Modal show={this.state.show}>
           <Modal.Header closeButton onClick={this.cancel}>
             <h2>Form Page</h2>
@@ -296,74 +336,45 @@ export class PersonList extends Component {
           </Modal.Footer>
         </Modal>
         <br />
-        <input
-          type="text"
-          name="search"
-          id="input"
-          placeholder="Search User...."
-          value={this.state.search}
-          onChange={this.search}
-        />
         <br />
         <table className="table table-striped container">
           <thead>
             <tr>
               <th>S.No</th>
-              <th>FirstName</th>
-              <th>LastName</th>
-              <th>Age</th>
-              <th>Gender</th>
+              <th onClick={this.sortUserName}>FirstName</th>
+              <th onClick={this.sortUserName}>LastName</th>
+              <th onClick={this.sorting}>Age</th>
+              <th onClick={this.sortUserName}>Gender</th>
               <th>Update</th>
               <th>Delete</th>
             </tr>
           </thead>
           <tbody id="personlist">
-            {this.state.personlist
-              .filter((person) => {
-                if (this.state.search == "") {
-                  return person;
-                } else if (
-                  person.firstName
-                    .toLowerCase()
-                    .includes(this.state.search.toLowerCase()) ||
-                  person.lastName
-                    .toLowerCase()
-                    .includes(this.state.search.toLowerCase()) ||
-                  person.age
-                    .toLowerCase()
-                    .includes(this.state.search.toLowerCase()) ||
-                  person.gender
-                    .toLowerCase()
-                    .includes(this.state.search.toLowerCase())
-                ) {
-                  return person;
-                }
-              })
-              .map((person, i) => (
-                <tr>
-                  <td>{i + 1}</td>
-                  <td>{person.firstName}</td>
-                  <td>{person.lastName}</td>
-                  <td>{person.age}</td>
-                  <td>{person.gender}</td>
-                  <td>
-                    <button
-                      class="btn btn-primary"
-                      id={i}
-                      value={i}
-                      onClick={this.edit}
-                    >
-                      <BsPencilSquare />
-                      Edit
-                    </button>
-                  </td>
-                  <td>
-                    <button class="btn btn-danger" id={i} onClick={this.delete}>
-                      <BsFillTrashFill /> Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
+            {this.getPersons().map((person, i) => (
+              <tr>
+                <td>{i + 1}</td>
+                <td>{person.firstName}</td>
+                <td>{person.lastName}</td>
+                <td>{person.age}</td>
+                <td>{person.gender}</td>
+                <td>
+                  <button
+                    class="btn btn-primary"
+                    id={i}
+                    value={i}
+                    onClick={this.edit}
+                  >
+                    <BsPencilSquare />
+                    Edit
+                  </button>
+                </td>
+                <td>
+                  <button class="btn btn-danger" id={i} onClick={this.delete}>
+                    <BsFillTrashFill /> Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
